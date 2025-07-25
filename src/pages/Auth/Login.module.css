@@ -1,0 +1,255 @@
+.themeContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f9f9f9;
+    opacity: 1;
+    background-image: radial-gradient(#f1f1f1 2px, #f9f9f9 2px);
+    background-size: 40px 40px;
+    margin-bottom: 10vh;
+}
+
+.authContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: 4rem;
+    margin-top: 4rem;
+    padding: 1rem;
+}
+
+.authHeader {
+    font-family: "DM Sans", sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1d1d1d;
+}
+
+.authSubHeader {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #1d1d1d;
+
+    max-width: 20rem;
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 1rem;
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 0.5rem;
+}
+
+.inputLabel {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #555555;
+}
+
+.authInput {
+    font-family: "DM Sans", sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1d1d1d;
+    min-width: 17rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+
+    width: 100%;
+}
+
+.authInput::placeholder {
+    font-size: 0.9rem;
+}
+
+.authButton {
+    background-color: #1d1d1d;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-family: "DM Sans", sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+
+    min-width: 8rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    row-gap: 0.5rem;
+    column-gap: 0.5rem;
+}
+
+.secondaryAuthButton {
+    background-color: #f8f9fa;
+    color: #1d1d1d;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #1d1d1d;
+    font-family: "DM Sans", sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+
+    min-width: 8rem;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    column-gap: 1rem;
+    width: 100%;
+}
+
+.authLeftText {
+    font-family: "DM Sans", sans-serif;
+    font-size: 3rem;
+    font-weight: 500;
+    color: #1d1d1d;
+    text-align: left;
+    line-height: 3rem;
+    font-weight: 600;
+    max-width: 20rem;
+    margin-bottom: 0.5rem;
+}
+
+.authLeftSubText {
+    font-family: "DM Sans", sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1d1d1d;
+    text-align: left;
+    line-height: 1.5rem;
+    font-weight: 400;
+    max-width: 20rem;
+}
+
+.leftSideFeatures {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 748px) {
+    .authContainer {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10vh;
+    }
+
+    .authRightSide {
+        margin-top: 2rem;
+    }
+
+    .authInput {
+        width: 90%;
+    }
+}
+
+/* Your new CSS code goes here */
+.orDivider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-color);
+    margin: 0.5rem 0;
+}
+
+.orDivider hr {
+    flex: 1;
+    border: none;
+    height: 1px;
+    width: 8.5rem;
+
+    color: #8f8f8f;
+    background-color: #8f8f8f;
+}
+
+.orDivider span {
+    padding: 0 0.5rem;
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+.myRoomsContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+.authHeader {
+    font-family: "DM Sans", sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1d1d1d;
+    margin-bottom: 1rem;
+}
+.myRooms {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 40rem;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+}
+.myRoom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 3rem;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+.myRoom:last-child {
+    border-bottom: none;
+}
+.myRoom p {
+    font-family: "DM Sans", sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1d1d1d;
+}
+.myRoom button {
+    background-color: #1d1d1d;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-family: "DM Sans", sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+}
+@media (max-width: 748px) {
+    .myRooms {
+        width: 90%;
+    }
+}
