@@ -54,35 +54,25 @@ export const signup = async (
     password: string,
     fullName: string,
     phoneNumber: string,
-    supabase: SupabaseClient<any, "public", any>,
+    supabase: SupabaseClient,
     navigate: NavigateFunction
 ) => {
-    await supabase.auth
-        .signUp({
-            email: email,
-            password: password,
-        })
-        .then(async (response: any) => {
-            if (response.error) {
-                toast.error(response.error.message);
-            } else {
-                const {error} = await supabase.auth.updateUser({
-                    data: {
-                        full_name: fullName,
-                        phone: phoneNumber,
-                    },
-                });
+    const {error} = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: {
+                full_name: fullName,
+                phone: phoneNumber,
+            },
+        },
+    });
 
-                if (error) {
-                    toast.error(error.message);
-                    console.log("Iavdae ann Error ayae");
-                } else {
-                    toast.success("Signed up successfully!");
-                    navigate("/");
-                }
-            }
-        })
-        .catch((error: any) => {
-            toast.error(error.error_description || error.message);
-        });
+    if (error) {
+        toast.error(error.message);
+        return;
+    }
+
+    toast.success("Signed up successfully!");
+    navigate("/");
 };
