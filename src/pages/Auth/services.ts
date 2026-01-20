@@ -1,6 +1,6 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import {SupabaseClient} from "@supabase/supabase-js";
 import toast from "react-hot-toast";
-import { NavigateFunction } from "react-router-dom";
+import {NavigateFunction} from "react-router-dom";
 
 export const login = async (
     username: string,
@@ -54,7 +54,6 @@ export const signup = async (
     password: string,
     fullName: string,
     phoneNumber: string,
-    admissionNumber: string,
     supabase: SupabaseClient<any, "public", any>,
     navigate: NavigateFunction
 ) => {
@@ -67,11 +66,10 @@ export const signup = async (
             if (response.error) {
                 toast.error(response.error.message);
             } else {
-                const { error } = await supabase.auth.updateUser({
+                const {error} = await supabase.auth.updateUser({
                     data: {
                         full_name: fullName,
-                        phone_number: phoneNumber,
-                        admission_number: admissionNumber,
+                        phone: phoneNumber,
                     },
                 });
 

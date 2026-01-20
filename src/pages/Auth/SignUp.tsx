@@ -1,12 +1,12 @@
-import { useContext } from "react";
+import {useContext} from "react";
 import AppContext from "../../contexts/appContext";
 import styles from "./Login.module.css";
-import { signup } from "./services";
-import { Link, useNavigate } from "react-router-dom";
+import {signup} from "./services";
+import {Link, useNavigate} from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 
 const Signup = () => {
-    const { supabase } = useContext(AppContext);
+    const {supabase} = useContext(AppContext);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -14,18 +14,16 @@ const Signup = () => {
         const email = (e.target as HTMLFormElement).email.value;
         const password = (e.target as HTMLFormElement).password.value;
         const fullName = (e.target as HTMLFormElement).fullName.value;
-        const phoneNumber = (e.target as HTMLFormElement).phoneNumber.value;
-        const admissionNumber = (e.target as HTMLFormElement).admissionNumber.value;
+        const phoneNumber = (e.target as HTMLFormElement).phoneNumber.value || undefined;
 
         if (supabase) {
-            // Assuming the signup function or another service function will handle these new fields
-            signup(email, password, fullName, phoneNumber, admissionNumber, supabase, navigate);
+            signup(email, password, fullName, phoneNumber, supabase, navigate);
         }
     };
 
     return (
         <div className={styles.themeContainer}>
-            <Navbar />
+            <Navbar/>
             <div className={styles.authContainer}>
                 <div className={styles.authLeftSide}>
                     <p className={styles.leftSideFeatures}>Fast • Efficient • Reliable</p>
@@ -72,23 +70,11 @@ const Signup = () => {
                             />
                         </div>
                         <div className={styles.inputContainer}>
-                            <p className={styles.inputLabel}>Enter Your Phone Number*</p>
+                            <p className={styles.inputLabel}>Enter Your Phone Number (optional)</p>
                             <input
                                 type="tel"
                                 name="phoneNumber"
                                 placeholder="9856748595"
-                                required
-                                className={styles.authInput}
-                            />
-                        </div>
-
-                        <div className={styles.inputContainer}>
-                            <p className={styles.inputLabel}>Enter Your Admission Number*</p>
-                            <input
-                                type="text"
-                                name="admissionNumber"
-                                placeholder="21/7108"
-                                required
                                 className={styles.authInput}
                             />
                         </div>

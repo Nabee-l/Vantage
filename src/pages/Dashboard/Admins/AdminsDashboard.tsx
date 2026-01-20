@@ -61,8 +61,40 @@ const AdminsDashboard = () => {
         }
     };
 
+    // Reusable function to fetch users and their locations
+    const fetchUsersAndLocations = async (roomId: string) => {
+        if (!supabase) return;
+        try {
+            // Fetch room members
+            const { data: memberData, error: memberError } = await supabase
+                .from("room_members")
+                .select("user_id")
+                .eq("room_id", roomId);
+            if (memberError) {
+                toast.error("Error fetching room members");
+                return;
+            }
+            const userIds = memberData.map((member) => member.user_id);
+            getUserLocation(userIds);
+            // Fetch user data
+            const { data: userData, error: userError } = await supabase
+                .from("users")
+                .select("*")
+                .in("id", userIds);
+            if (userError) {
+                console.error("Error fetching user data:", userError);
+            } else {
+                setUsers(userData);
+            }
+        } catch (error) {
+            toast.error("Error fetching users");
+        }
+    };
+
     useEffect(() => {
         if (!supabase) return;
+        let memberSubscription: any;
+        let isMounted = true;
         const fetchData = async () => {
             try {
                 const { data: roomData, error: roomError } = await supabase
@@ -70,76 +102,16 @@ const AdminsDashboard = () => {
                     .select("id")
                     .eq("room_code", room_code)
                     .single();
-
                 if (roomError) {
                     toast.error("Error fetching room data");
                     navigate("/");
                     return;
                 }
-
                 const roomId = roomData.id;
-
-                // Fetch initial room members
-                const { data: initialMemberData, error: initialMemberError } = await supabase
-                    .from("room_members")
-                    .select("user_id")
-                    .eq("room_id", roomId);
-
-                if (initialMemberError) {
-                    toast.error("Error fetching initial room members");
-                    return;
-                }
-
-                const initialUserIds = initialMemberData.map((member) => member.user_id);
-                getUserLocation(initialUserIds);
-
-                // Fetch initial user data
-                const { data: initialUserData, error: initialUserError } = await supabase
-                    .from("users")
-                    .select("*")
-                    .in("id", initialUserIds);
-
-                if (initialUserError) {
-                    console.error("Error fetching initial user data:", initialUserError);
-                } else {
-                    setUsers(initialUserData);
-                }
-
-                const handleMemberChanges = async (payload: { eventType: string }) => {
-                    if (
-                        payload.eventType === "INSERT" ||
-                        payload.eventType === "UPDATE" ||
-                        payload.eventType === "DELETE"
-                    ) {
-                        const { data: memberData, error: memberError } = await supabase
-                            .from("room_members")
-                            .select("user_id")
-                            .eq("room_id", roomId);
-
-                        if (memberError) {
-                            toast.error("Error fetching room members");
-                            return;
-                        }
-
-                        const userIds = memberData.map((member) => member.user_id);
-                        getUserLocation(userIds);
-
-                        const { data: userData, error: userError } = await supabase
-                            .from("users")
-                            .select("*")
-                            .in("id", userIds);
-
-                        if (userError) {
-                            console.error("Error fetching user data:", userError);
-                        } else {
-                            setUsers(userData);
-                            const audio = new Audio("/ting.mp3");
-                            audio.play();
-                        }
-                    }
-                };
-
-                const memberSubscription = supabase
+                // Always fetch users and locations on mount
+                await fetchUsersAndLocations(roomId);
+                // Real-time subscription for room_members changes
+                memberSubscription = supabase
                     .channel(`room_members:${roomId}`)
                     .on(
                         "postgres_changes",
@@ -149,20 +121,31 @@ const AdminsDashboard = () => {
                             table: "room_members",
                             filter: `room_id=eq.${roomId}`,
                         },
-                        handleMemberChanges
+                        async (payload: { eventType: string }) => {
+                            if (
+                                payload.eventType === "INSERT" ||
+                                payload.eventType === "UPDATE" ||
+                                payload.eventType === "DELETE"
+                            ) {
+                                await fetchUsersAndLocations(roomId);
+                                if (isMounted) {
+                                    const audio = new Audio("/ting.mp3");
+                                    audio.play();
+                                }
+                            }
+                        }
                     )
                     .subscribe();
-
-                return () => {
-                    memberSubscription.unsubscribe();
-                };
             } catch (error) {
                 console.error("Error fetching room data:", error);
             }
         };
-
         fetchData();
-    }, [room_code]);
+        return () => {
+            isMounted = false;
+            if (memberSubscription) memberSubscription.unsubscribe();
+        };
+    }, [room_code, supabase]);
 
     const handleRefresh = () => {
         const userIds = users?.map((user) => user.id);
