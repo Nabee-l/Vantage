@@ -1,18 +1,18 @@
-import { useContext, useEffect, useState } from "react";
+import {useContext, useEffect, useState} from "react";
 import AppContext from "../../../contexts/appContext";
 import styles from "./AdminsDashboard.module.css";
 import MapComponent from "./MapComponent";
 
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import toast from "react-hot-toast";
-import { calculateDistance, checkAuth } from "../../utils";
+import {calculateDistance, checkAuth} from "../../utils";
 import Navbar from "../../../components/Navbar/Navbar";
 
 import ReactTimeAgo from "react-time-ago";
 
 const AdminsDashboard = () => {
-    const { supabase } = useContext(AppContext);
-    const { room_code } = useParams();
+    const {supabase} = useContext(AppContext);
+    const {room_code} = useParams();
     const [users, setUsers] = useState<any[]>();
     const [search, setSearch] = useState("");
     const navigate = useNavigate();
@@ -20,13 +20,13 @@ const AdminsDashboard = () => {
     const [position, setPosition] = useState<[number, number]>([0, 0]); // Initial map center position as state variable
 
     useEffect(() => {
-        checkAuth({ navigate, toast });
+        checkAuth({navigate, toast});
         // Check if geolocation is supported
         if ("geolocation" in navigator) {
             // Request user's location
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    const { latitude, longitude } = position.coords;
+                    const {latitude, longitude} = position.coords;
                     setPosition([latitude, longitude]);
                     console.log("Latitude:", latitude, "Longitude:", longitude);
                 },
@@ -45,7 +45,7 @@ const AdminsDashboard = () => {
         if (!supabase) return;
 
         try {
-            const { data: userLocationData, error: userLocationError } = await supabase
+            const {data: userLocationData, error: userLocationError} = await supabase
                 .from("user_location")
                 .select("*")
                 .in("user_id", userIds);
@@ -66,7 +66,7 @@ const AdminsDashboard = () => {
         if (!supabase) return;
         try {
             // Fetch room members
-            const { data: memberData, error: memberError } = await supabase
+            const {data: memberData, error: memberError} = await supabase
                 .from("room_members")
                 .select("user_id")
                 .eq("room_id", roomId);
@@ -77,7 +77,7 @@ const AdminsDashboard = () => {
             const userIds = memberData.map((member) => member.user_id);
             getUserLocation(userIds);
             // Fetch user data
-            const { data: userData, error: userError } = await supabase
+            const {data: userData, error: userError} = await supabase
                 .from("users")
                 .select("*")
                 .in("id", userIds);
@@ -97,7 +97,7 @@ const AdminsDashboard = () => {
         let isMounted = true;
         const fetchData = async () => {
             try {
-                const { data: roomData, error: roomError } = await supabase
+                const {data: roomData, error: roomError} = await supabase
                     .from("rooms")
                     .select("id")
                     .eq("room_code", room_code)
@@ -155,7 +155,7 @@ const AdminsDashboard = () => {
 
     return (
         <div className={styles.adminDashboardContainer}>
-            <Navbar />
+            <Navbar/>
             <div className={styles.dashboard}>
                 <div className={styles.leftSideContainer}>
                     <div className={styles.roomInformation}>
@@ -199,10 +199,10 @@ const AdminsDashboard = () => {
                                 users
                                     .filter(
                                         (user) =>
-                                            user.raw_user_meta_data.email
+                                            user.email
                                                 .toLowerCase()
                                                 .includes(search.toLowerCase()) ||
-                                            user.raw_user_meta_data.full_name
+                                            user.name
                                                 .toLowerCase()
                                                 .includes(search.toLowerCase())
                                     )
@@ -210,10 +210,10 @@ const AdminsDashboard = () => {
                                         <>
                                             <div className={styles.nearbyStudent}>
                                                 <div className={styles.nearbyStudentData}>
-                                                    {user?.raw_user_meta_data.full_name && (
+                                                    {user?.name && (
                                                         <div className={styles.userImageContainer}>
                                                             <p className={styles.userImage}>
-                                                                {user.raw_user_meta_data.full_name.substring(
+                                                                {user.name.substring(
                                                                     0,
                                                                     1
                                                                 )}
@@ -222,31 +222,31 @@ const AdminsDashboard = () => {
                                                     )}
                                                     <div className={styles.nearbyStudentDetails}>
                                                         <p className={styles.nearbyStudentName}>
-                                                            {user.raw_user_meta_data.full_name}
+                                                            {user.name}
                                                         </p>
-                                                        {user?.raw_user_meta_data.email && (
+                                                        {user?.email && (
                                                             <p
                                                                 className={
                                                                     styles.nearbyStudentLocation
                                                                 }
                                                             >
-                                                                {user.raw_user_meta_data.email.substring(
+                                                                {user.email.substring(
                                                                     0,
-                                                                    user.raw_user_meta_data.email.indexOf(
+                                                                    user.email.indexOf(
                                                                         "@"
                                                                     )
                                                                 )}
                                                             </p>
                                                         )}
                                                         <p className={styles.nearbyStudentPhone}>
-                                                            {user.raw_user_meta_data.phone_number}
+                                                            {user.phone}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 <div className={styles.studentLocationData}>
                                                     <p className={styles.studentLocation}>
                                                         <span>Last Updated</span>
-                                                        <br />{" "}
+                                                        <br/>{" "}
                                                         {usersLocation &&
                                                             usersLocation[0]?.updated_at && (
                                                                 <ReactTimeAgo
@@ -280,41 +280,41 @@ const AdminsDashboard = () => {
                                                                                 },
                                                                                 {
                                                                                     latitude:
-                                                                                        location.latitude,
+                                                                                    location.latitude,
                                                                                     longitude:
-                                                                                        location.longitude,
+                                                                                    location.longitude,
                                                                                 }
                                                                             ) < 1000
                                                                                 ? calculateDistance(
-                                                                                      {
-                                                                                          latitude:
-                                                                                              position[0],
-                                                                                          longitude:
-                                                                                              position[1],
-                                                                                      },
-                                                                                      {
-                                                                                          latitude:
-                                                                                              location.latitude,
-                                                                                          longitude:
-                                                                                              location.longitude,
-                                                                                      }
-                                                                                  ).toFixed(2) +
-                                                                                  " meters"
+                                                                                    {
+                                                                                        latitude:
+                                                                                            position[0],
+                                                                                        longitude:
+                                                                                            position[1],
+                                                                                    },
+                                                                                    {
+                                                                                        latitude:
+                                                                                        location.latitude,
+                                                                                        longitude:
+                                                                                        location.longitude,
+                                                                                    }
+                                                                                ).toFixed(2) +
+                                                                                " meters"
                                                                                 : calculateDistance(
-                                                                                      {
-                                                                                          latitude:
-                                                                                              position[0],
-                                                                                          longitude:
-                                                                                              position[1],
-                                                                                      },
-                                                                                      {
-                                                                                          latitude:
-                                                                                              location.latitude,
-                                                                                          longitude:
-                                                                                              location.longitude,
-                                                                                      }
-                                                                                  ).toFixed(2) +
-                                                                                  " km"}{" "}
+                                                                                    {
+                                                                                        latitude:
+                                                                                            position[0],
+                                                                                        longitude:
+                                                                                            position[1],
+                                                                                    },
+                                                                                    {
+                                                                                        latitude:
+                                                                                        location.latitude,
+                                                                                        longitude:
+                                                                                        location.longitude,
+                                                                                    }
+                                                                                ).toFixed(2) +
+                                                                                " km"}{" "}
                                                                         </p>
                                                                     </>
                                                                 ))}
@@ -329,7 +329,7 @@ const AdminsDashboard = () => {
                 </div>
                 <div className={styles.mapContainer}>
                     <div className={styles.map}>
-                        <MapComponent usersLocation={usersLocation} position={position} />
+                        <MapComponent usersLocation={usersLocation} position={position}/>
                     </div>
                 </div>
             </div>
