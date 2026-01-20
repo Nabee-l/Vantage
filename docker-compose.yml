@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  vantage:
+    build: .
+    container_name: vantage
+    ports:
+      - "127.0.0.1:8000:80"
+    restart: unless-stopped
