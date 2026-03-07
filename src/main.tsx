@@ -10,6 +10,10 @@ import TimeAgo from "javascript-time-ago";
 
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
+import Radar from "radar-sdk-js";
+import "radar-sdk-js/dist/radar.css";
+
+Radar.initialize(import.meta.env.VITE_RADAR_PUBLISHABLE_KEY);
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
