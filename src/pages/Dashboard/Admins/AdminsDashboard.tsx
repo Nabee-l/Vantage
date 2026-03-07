@@ -235,7 +235,7 @@ const AdminsDashboard = () => {
                         <p>{user.phone}</p>
                       </div>
 
-                      {location && (
+                      {location && position && (
                         <div>
                           <p>
                             <ReactTimeAgo
