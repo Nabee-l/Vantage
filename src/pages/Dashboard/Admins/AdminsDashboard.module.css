@@ -63,6 +63,77 @@
     border-radius: 5px;
 }
 
+.geofenceControlContainer {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: #f9fafb;
+}
+
+.geofenceControlHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.geofenceTitle {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1d1d1d;
+}
+
+.geofenceValue {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.geofenceSlider {
+    width: 100%;
+    cursor: pointer;
+}
+
+
+
+.geofenceInputRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.geofenceInputLabel {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.geofenceNumberInput {
+    width: 6rem;
+    padding: 0.35rem 0.45rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.geofenceResetButton {
+    margin-top: 0.5rem;
+    width: 100%;
+    background-color: #fff;
+    color: #1d1d1d;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.45rem 0.6rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.geofenceResetButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .nearbyStudent {
     border-bottom: 1px solid #e5e7eb;
     padding: 1rem 0;

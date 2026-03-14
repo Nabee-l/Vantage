@@ -18,6 +18,13 @@ const AdminsDashboard = () => {
   const [usersLocation, setUsersLocation] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [position, setPosition] = useState<[number, number] | null>(null);
+  const [geofenceCenter, setGeofenceCenter] = useState<[number, number] | null>(null);
+  const [geofenceRadius, setGeofenceRadius] = useState(200);
+
+  const updateGeofenceRadius = (value: number) => {
+    const safeValue = Number.isNaN(value) ? 200 : value;
+    setGeofenceRadius(Math.min(2000, Math.max(50, safeValue)));
+  };
 
   /* =============================
      GET ADMIN GEOLOCATION
@@ -30,6 +37,9 @@ const AdminsDashboard = () => {
         (pos) => {
           const { latitude, longitude } = pos.coords;
           setPosition([latitude, longitude]);
+          setGeofenceCenter((currentCenter) =>
+            currentCenter || [latitude, longitude]
+          );
         },
         (error) => {
           console.error("Error getting location:", error);
@@ -157,7 +167,14 @@ const AdminsDashboard = () => {
               email: user.email,
             };
           })
-          .filter(Boolean)
+          .filter(
+            (location): location is {
+              id: string;
+              latitude: number;
+              longitude: number;
+              email: string;
+            } => Boolean(location)
+          )
       : [];
 
   const handleRefresh = () => {
@@ -207,6 +224,58 @@ const AdminsDashboard = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+
+            <div className={styles.geofenceControlContainer}>
+              <div className={styles.geofenceControlHeader}>
+                <p className={styles.geofenceTitle}>Geofence Radius</p>
+                <p className={styles.geofenceValue}>{geofenceRadius} m</p>
+              </div>
+
+              <input
+                type="range"
+                min={50}
+                max={2000}
+                step={50}
+                value={geofenceRadius}
+                onChange={(e) =>
+                  updateGeofenceRadius(Number(e.target.value))
+                }
+                className={styles.geofenceSlider}
+              />
+
+              <div className={styles.geofenceInputRow}>
+                <label
+                  htmlFor="geofence-radius-input"
+                  className={styles.geofenceInputLabel}
+                >
+                  Radius (meters)
+                </label>
+                <input
+                  id="geofence-radius-input"
+                  type="number"
+                  min={50}
+                  max={2000}
+                  step={50}
+                  value={geofenceRadius}
+                  onChange={(e) =>
+                    updateGeofenceRadius(Number(e.target.value))
+                  }
+                  className={styles.geofenceNumberInput}
+                />
+              </div>
+
+              <button
+                type="button"
+                className={styles.geofenceResetButton}
+                onClick={() => {
+                  if (!position) return;
+                  setGeofenceCenter(position);
+                }}
+                disabled={!position}
+              >
+                Set geofence to my current location
+              </button>
+            </div>
 
             <div className={styles.nearbyStudentList}>
               {users
@@ -271,6 +340,8 @@ const AdminsDashboard = () => {
           <MapComponent
             usersLocation={formattedUsersLocation}
             position={position}
+            geofenceCenter={geofenceCenter}
+            geofenceRadius={geofenceRadius}
           />
         </div>
       </div>

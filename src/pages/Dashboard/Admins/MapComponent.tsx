@@ -16,6 +16,8 @@ type UserLocation = {
 type Props = {
   usersLocation: UserLocation[];
   position: [number, number] | null;
+  geofenceCenter: [number, number] | null;
+  geofenceRadius: number;
 };
 
 const containerStyle = {
@@ -23,13 +25,6 @@ const containerStyle = {
   height: "83vh",
   borderRadius: "10px",
 };
-
-const GEOFENCE_CENTER = {
-  lat: 11.2588,
-  lng: 75.7804,
-};
-
-const GEOFENCE_RADIUS = 500; // meters
 
 const isValid = (lat: unknown, lng: unknown) =>
   typeof lat === "number" &&
@@ -61,11 +56,21 @@ const isOutsideGeofence = (
   return distance > radius;
 };
 
-const MapComponent = ({ usersLocation, position }: Props) => {
+const MapComponent = ({
+  usersLocation,
+  position,
+  geofenceCenter,
+  geofenceRadius,
+}: Props) => {
   const mapRef = useRef<google.maps.Map | null>(null);
 
   const myLat = position?.[0];
   const myLng = position?.[1];
+  const hasAdminPosition = isValid(myLat, myLng);
+  const hasGeofenceCenter = isValid(geofenceCenter?.[0], geofenceCenter?.[1]);
+  const geofenceCenterPoint = hasGeofenceCenter
+    ? { lat: geofenceCenter![0], lng: geofenceCenter![1] }
+    : null;
 
   /* =============================
      CENTER MAP WHEN POSITION UPDATES
@@ -83,26 +88,26 @@ const MapComponent = ({ usersLocation, position }: Props) => {
      EXIT DETECTION (ADMIN)
   ============================== */
   useEffect(() => {
-    if (!position || !isValid(myLat, myLng)) return;
+    if (!hasAdminPosition || !geofenceCenterPoint) return;
 
     const outside = isOutsideGeofence(
       myLat!,
       myLng!,
-      GEOFENCE_CENTER.lat,
-      GEOFENCE_CENTER.lng,
-      GEOFENCE_RADIUS
+      geofenceCenterPoint.lat,
+      geofenceCenterPoint.lng,
+      geofenceRadius
     );
 
     if (outside) {
       console.log("🚨 Admin left geofence");
     }
-  }, [position]);
+  }, [hasAdminPosition, geofenceCenterPoint, geofenceRadius, myLat, myLng]);
 
   /* =============================
      EXIT DETECTION (STUDENTS)
   ============================== */
   useEffect(() => {
-    if (!usersLocation) return;
+    if (!usersLocation || !geofenceCenterPoint) return;
 
     usersLocation.forEach((user) => {
       if (!isValid(user.latitude, user.longitude)) return;
@@ -110,28 +115,30 @@ const MapComponent = ({ usersLocation, position }: Props) => {
       const outside = isOutsideGeofence(
         user.latitude,
         user.longitude,
-        GEOFENCE_CENTER.lat,
-        GEOFENCE_CENTER.lng,
-        GEOFENCE_RADIUS
+        geofenceCenterPoint.lat,
+        geofenceCenterPoint.lng,
+        geofenceRadius
       );
 
       if (outside) {
         console.log(`🚨 ${user.email} left geofence`);
       }
     });
-  }, [usersLocation]);
+  }, [usersLocation, geofenceCenterPoint, geofenceRadius]);
 
   return (
     <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={position ? { lat: myLat!, lng: myLng! } : GEOFENCE_CENTER}
+        center={hasAdminPosition ? { lat: myLat!, lng: myLng! } : undefined}
         zoom={15}
-        onLoad={(map) => (mapRef.current = map)}
+        onLoad={(map) => {
+          mapRef.current = map;
+        }}
         mapTypeId="satellite"
       >
         {/* 🔵 ADMIN MARKER */}
-        {position && isValid(myLat, myLng) && (
+        {hasAdminPosition && (
           <Marker
             position={{ lat: myLat!, lng: myLng! }}
             icon={{
@@ -157,17 +164,19 @@ const MapComponent = ({ usersLocation, position }: Props) => {
         )}
 
         {/* 🟠 GEOFENCE */}
-        <Circle
-          center={GEOFENCE_CENTER}
-          radius={GEOFENCE_RADIUS}
-          options={{
-            fillColor: "#FF0000",
-            fillOpacity: 0.15,
-            strokeColor: "#FF0000",
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-          }}
-        />
+        {geofenceCenterPoint && (
+          <Circle
+            center={geofenceCenterPoint}
+            radius={geofenceRadius}
+            options={{
+              fillColor: "#FF0000",
+              fillOpacity: 0.15,
+              strokeColor: "#FF0000",
+              strokeOpacity: 0.8,
+              strokeWeight: 2,
+            }}
+          />
+        )}
       </GoogleMap>
     </LoadScript>
   );
