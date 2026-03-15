@@ -7,13 +7,19 @@ import { Toaster } from "react-hot-toast";
 import "leaflet/dist/leaflet.css";
 
 import TimeAgo from "javascript-time-ago";
-
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import Radar from "radar-sdk-js";
 import "radar-sdk-js/dist/radar.css";
+import { appConfig, configStatus } from "./config";
 
-Radar.initialize(import.meta.env.VITE_RADAR_PUBLISHABLE_KEY);
+if (configStatus.hasRadar) {
+    Radar.initialize(appConfig.radarPublishableKey);
+} else {
+    console.warn(
+        "Missing VITE_RADAR_PUBLISHABLE_KEY. Radar SDK was not initialized."
+    );
+}
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);

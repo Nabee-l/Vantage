@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import { appConfig, configStatus } from "../../../config";
 
 type UserLocation = {
   id: string;
@@ -58,7 +59,7 @@ const MapComponent = ({
 }: Props) => {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    googleMapsApiKey: appConfig.googleMapsApiKey,
   });
   const mapRef = useRef<google.maps.Map | null>(null);
   const geofenceCircleRef = useRef<google.maps.Circle | null>(null);
@@ -174,6 +175,10 @@ const MapComponent = ({
       }
     };
   }, []);
+
+  if (!configStatus.hasGoogleMaps) {
+    return <div>Google Maps is unavailable because VITE_GOOGLE_MAPS_API_KEY is missing.</div>;
+  }
 
   if (!isLoaded) {
     return <div>Loading map...</div>;
